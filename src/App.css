@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+.bg-lime {
+  background-color: #a9e851;
+}
+.text-lime {
+  color: #a9e851;
+}
+button{
+  cursor: pointer;
+}
