@@ -2,9 +2,12 @@ import { WalletCards, LogOut } from "lucide-react";
 import { useConnect, useAccount, useDisconnect, useBalance } from "wagmi";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { disconnectWallet, setBalance, setWalletData } from "../../store/walletSlice";
+import {
+  disconnectWallet,
+  setBalance,
+  setWalletData,
+} from "../../store/walletSlice";
 import type { AppDispatch } from "../../store/store";
-
 
 const DonutTitle = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -12,7 +15,6 @@ const DonutTitle = () => {
   const connect = useConnect().connect;
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
-
 
   // Find only the WalletConnect connector
   const walletConnect = connectors.find((c) =>
@@ -51,7 +53,7 @@ const DonutTitle = () => {
           decimals: balance.decimals,
           formatted: balance.formatted,
           symbol: balance.symbol,
-          value: balance.value,
+          value: balance.value.toString(), // ✅ fix here
         })
       );
     } else {

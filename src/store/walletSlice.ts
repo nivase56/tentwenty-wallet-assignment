@@ -1,6 +1,6 @@
 // store/walletSlice.ts
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
 interface WalletState {
   address: string | null;
@@ -9,7 +9,7 @@ interface WalletState {
     decimals: number;
     formatted: string;
     symbol: string;
-    value: bigint;
+    value: string; // ✅ change bigint → string
   } | null;
 }
 
@@ -20,7 +20,7 @@ const initialState: WalletState = {
 };
 
 const walletSlice = createSlice({
-  name: 'wallet',
+  name: "wallet",
   initialState,
   reducers: {
     setWalletData: (
@@ -39,11 +39,12 @@ const walletSlice = createSlice({
         decimals: number;
         formatted: string;
         symbol: string;
-        value: bigint;
+        value: string; // ✅ expect string
       } | null>
     ) => {
       state.balance = action.payload;
     },
+
     disconnectWallet: (state) => {
       state.address = null;
       state.isActive = false;
@@ -52,5 +53,6 @@ const walletSlice = createSlice({
   },
 });
 
-export const { setWalletData, setBalance, disconnectWallet } = walletSlice.actions;
+export const { setWalletData, setBalance, disconnectWallet } =
+  walletSlice.actions;
 export default walletSlice.reducer;

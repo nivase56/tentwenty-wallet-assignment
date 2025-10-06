@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store/store";
+
 
 interface DataItem {
   label: string;
@@ -10,6 +11,12 @@ interface DataItem {
 
 const DonutChart: React.FC<{ data: DataItem[] }> = ({ data }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [tooltip, setTooltip] = useState<{ visible: boolean; x: number; y: number; content: string }>({
+    visible: false,
+    x: 0,
+    y: 0,
+    content: "",
+  });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -25,6 +32,8 @@ const DonutChart: React.FC<{ data: DataItem[] }> = ({ data }) => {
 
     const total = data.reduce((sum, item) => sum + item.value, 0);
     let currentAngle = -Math.PI / 2;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = "high";
@@ -47,18 +56,123 @@ const DonutChart: React.FC<{ data: DataItem[] }> = ({ data }) => {
       currentAngle += sliceAngle;
     });
 
+    // Draw the center circle to create the donut hole
     ctx.beginPath();
     ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
     ctx.fillStyle = "#2b2d31";
     ctx.fill();
   }, [data]);
 
+  // Helper to get angle from center to point (x,y)
+  
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const canvas = canvasRef.current;
+  if (!canvas) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  const outerRadius = 95;
+  const innerRadius = 50;
+
+  const dx = x - centerX;
+  const dy = y - centerY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  if (distance < innerRadius || distance > outerRadius) {
+    setTooltip({ visible: false, x: 0, y: 0, content: "" });
+    return;
+  }
+
+  // Calculate angle starting from -PI/2 (12 o'clock)
+  let angle = Math.atan2(dy, dx);
+  if (angle < -Math.PI / 2) {
+    angle += 2 * Math.PI; // Normalize between -PI/2 and 3PI/2
+  }
+
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  let currentAngle = -Math.PI / 2;
+
+  let hoveredItem: DataItem | null = null;
+
+  for (const item of data) {
+    const sliceAngle = (item.value / total) * 2 * Math.PI;
+    if (angle >= currentAngle && angle < currentAngle + sliceAngle) {
+      hoveredItem = item;
+      break;
+    }
+    currentAngle += sliceAngle;
+  }
+
+  if (hoveredItem) {
+    setTooltip({
+      visible: true,
+      x: e.clientX + 10,
+      y: e.clientY + 10,
+      content: `${hoveredItem.label}: ${hoveredItem.value.toFixed(1)}%`,
+    });
+  } else {
+    setTooltip({ visible: false, x: 0, y: 0, content: "" });
+  }
+};
+
+
+  const handleMouseLeave = () => {
+    setTooltip({ visible: false, x: 0, y: 0, content: "" });
+  };
+
   return (
-    <div className="flex items-center justify-center p-1">
-      <canvas ref={canvasRef} width={200} height={200} className="mx-auto" />
+    <div style={{ position: "relative", display: "inline-block" }}>
+      <canvas
+        ref={canvasRef}
+        width={200}
+        height={200}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        style={{ display: "block", margin: "0 auto" }}
+      />
+      {tooltip.visible && (
+        <div
+          style={{
+            position: "fixed",
+            top: tooltip.y,
+            left: tooltip.x,
+            backgroundColor: "rgba(43, 45, 49, 0.85)",
+            color: "white",
+            padding: "6px 12px",
+            borderRadius: 8,
+            fontSize: 14,
+            pointerEvents: "none",
+            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
+            whiteSpace: "nowrap",
+            transition: "opacity 0.2s ease",
+            zIndex: 1000,
+          }}
+        >
+          {tooltip.content}
+          <div
+            style={{
+              position: "absolute",
+              width: 0,
+              height: 0,
+              borderLeft: "6px solid transparent",
+              borderRight: "6px solid transparent",
+              borderTop: "6px solid rgba(43, 45, 49, 0.85)",
+              bottom: "-6px",
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
+
 
 const CryptoPortfolio = () => {
   // Use the same portfolio with percentages and colors for chart and list
