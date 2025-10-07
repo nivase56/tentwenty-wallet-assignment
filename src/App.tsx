@@ -12,7 +12,7 @@ function App() {
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <PersistGate loading={null} persistor={persistor}>
+        <PersistGate loading={"loading"} persistor={persistor}>
           <Dashboard />
         </PersistGate>
       </QueryClientProvider>
@@ -21,21 +21,3 @@ function App() {
 }
 
 export default App;
-
-{
-  /* <TitleBar
-  title="Watchlist"
-  icon={<span className="text-lime-400"><Star fill="#A9E851"/></span>}
-  actions={[
-    {
-      label: "Refresh Prices",
-      icon: <RefreshCcw size={14} />,
-    },
-    {
-      label: "Add Token",
-      icon: <Plus size={14} />,
-      className: "bg-lime-500 hover:bg-lime-600 text-black",
-    },
-  ]}
-/> */
-}

@@ -1,18 +1,29 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import walletReducer from './walletSlice';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
-import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import walletReducer from "./walletSlice";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
+import {
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import watchlistReducer from "./watchListSlice"; // import your new slice
+import refreshReducer from "./refreshSlice";
 
 // Configure persistence
 const persistConfig = {
-  key: 'root',
+  key: "root",
   storage,
-  whitelist: ['wallet'], // persist only wallet slice, add more if needed
+  whitelist: ["wallet", "watchlist"], // persist watchlist as well
 };
 
 const rootReducer = combineReducers({
   wallet: walletReducer,
+  watchlist: watchlistReducer, // Add watchlist reducer here
+  refresh: refreshReducer,
   // add other reducers here
 });
 
@@ -24,7 +35,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        ignoredPaths: ['wallet.balance.value'], // ignore bigint in balance for serializable check
+        ignoredPaths: ["wallet.balance.value"], // ignore bigint in balance for serializable check
       },
     }),
 });

@@ -7,7 +7,8 @@ import {
   setBalance,
   setWalletData,
 } from "../../store/walletSlice";
-import type { AppDispatch } from "../../store/store";
+import { persistor, type AppDispatch } from "../../store/store";
+import { clearWatchlist } from "../../store/watchListSlice";
 
 const DonutTitle = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -62,11 +63,11 @@ const DonutTitle = () => {
   }, [balance, dispatch]);
 
   return (
-    <div className="w-full flex items-center justify-between py-3 px-1">
+    <div className="w-full flex items-center justify-between p-1">
       {/* Left Section */}
       <div className="flex items-center gap-2">
         <span className="text-lg">
-          <div className="h-5 w-5 bg-lime-400 rounded-sm flex items-center justify-center">
+          <div className="h-5 w-5 bg-lime rounded-sm flex items-center justify-center">
             <p className="h-3 w-3 bg-black transform rotate-[10deg] origin-top-right" />
           </div>
         </span>
@@ -76,8 +77,8 @@ const DonutTitle = () => {
       {/* Right Section */}
       <div className="flex items-center gap-3">
         {isConnected && address && (
-          <div className="px-3 py-1.5 bg-gray-800 rounded-3xl border border-gray-700">
-            <span className="text-sm font-mono text-lime-400">
+          <div className="px-3 py-1.5 bg-[#27272A] rounded-3xl border border-gray-700">
+            <span className="text-sm font-mono text-lime">
               {truncateAddress(address)}
             </span>
           </div>
@@ -87,11 +88,15 @@ const DonutTitle = () => {
           className={`flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-3xl font-semibold transition-colors ${
             isConnected
               ? "bg-red-500 hover:bg-red-600 text-white"
-              : "bg-lime-400 hover:bg-lime-500 text-black"
+              : "bg-lime hover:bg-lime text-black"
           }`}
           onClick={() => {
             if (isConnected) {
               disconnect();
+              dispatch(disconnectWallet());
+              dispatch(clearWatchlist());
+              persistor.purge();
+              persistor.purge(); // clears persisted data on wallet disconnect
             } else if (walletConnect) {
               connect({ connector: walletConnect });
             } else {

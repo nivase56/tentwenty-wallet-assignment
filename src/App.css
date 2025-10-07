@@ -6,6 +6,38 @@
 .text-lime {
   color: #a9e851;
 }
-button{
+button {
   cursor: pointer;
+}
+body::-webkit-scrollbar {
+  width: 10px;
+}
+
+body::-webkit-scrollbar-track {
+  background: #272727; /* light track */
+  border-radius: 10px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: #333; /* dark thumb */
+  border-radius: 10px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: #191919; /* darker on hover */
+}
+
+/* Firefox support */
+body {
+  scrollbar-width: thin;
+  scrollbar-color: #333 transparent;
+}
+
+.glass {
+  /* From https://css.glass */
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(52, 50, 50, 0.3);
 }
