@@ -1,4 +1,4 @@
-import React, {
+import {
   useState,
   useEffect,
   useRef,
@@ -223,7 +223,8 @@ const TokenSearchModal: FC<TokenSearchModalProps> = ({ isOpen, onClose }) => {
                     {token.name} ({token.symbol})
                   </div>
                   <div className="text-gray-400 text-xs">
-                    Price: ${token.price.toLocaleString(undefined, {
+                    Price: $
+                    {token.price.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
@@ -261,10 +262,14 @@ const TokenSearchModal: FC<TokenSearchModalProps> = ({ isOpen, onClose }) => {
           <div ref={sentinelRef} />
 
           {loadingMore && (
-            <div className="text-gray-400 text-center p-2">Loading more tokens...</div>
+            <div className="text-gray-400 text-center p-2">
+              Loading more tokens...
+            </div>
           )}
           {!hasMore && !loadingMore && tokens.length > 0 && (
-            <div className="text-gray-400 text-center p-2">No more tokens to load</div>
+            <div className="text-gray-400 text-center p-2">
+              No more tokens to load
+            </div>
           )}
         </div>
 
@@ -328,7 +333,10 @@ const WatchListTitle: FC = () => {
           </button>
         </div>
       </div>
-      <TokenSearchModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <TokenSearchModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   );
 };
